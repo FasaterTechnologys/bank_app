@@ -1,0 +1,117 @@
+import 'package:bank_app/logo.dart';
+import 'package:bank_app/screens/registr/accauntpred.dart';
+import 'package:bank_app/screens/registr/buttonregistr.dart';
+import 'package:bank_app/screens/registr/column.dart';
+import 'package:bank_app/screens/registr/divider.dart';
+import 'package:bank_app/screens/registr/iconzavod.dart';
+import 'package:bank_app/screens/registr/registrtext.dart';
+import 'package:bank_app/screens/registr/textfield.dart';
+import 'package:bank_app/screens/registr/valid.dart';
+import 'package:bank_app/screens/registr/zaprosreg.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:http/http.dart' as http;
+import 'package:bank_app/peremen.dart';
+import 'package:flutter/material.dart';
+
+class Registr extends StatefulWidget {
+  const Registr({Key? key}) : super(key: key);
+
+  @override
+  _RegistrState createState() => _RegistrState();
+}
+
+class _RegistrState extends State<Registr> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/backgroungimage.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            logo(context, Colors.white),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.025,
+            ),
+            divider(context),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.014,
+            ),
+            registrtext(context),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.025,
+            ),
+            Center(
+              child: Column(
+                children: [
+                  textfield(context, "E-mail", email, false),
+                  columnvoid(context, 0.017),
+                  download == false
+                      ? buttonlogin(context, "Войти")
+                      : const CircularProgressIndicator(
+                          backgroundColor: Color.fromRGBO(196, 196, 196, 0.3),
+                        ),
+                ],
+              ),
+            ),
+            const Spacer(),
+            const Spacer(),
+            iconzavod(context),
+            const Spacer(),
+            accpred(context),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.03,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future register() async {
+    setState(() {});
+    download = true;
+    proverka = true;
+
+    var validurl = "https://dynnime.000webhostapp.com/valid.php";
+    var validresponse = await http.post(
+      Uri.parse(validurl),
+      body: {
+        "servic": email.text,
+      },
+    );
+    text1 = validresponse.body;
+    valid();
+    if (validation == false) {
+      download = false;
+      setState(() {});
+      return;
+    }
+    setState(() {});
+
+    if (validresponse.body == "false") {
+      zaprosreg(context);
+      download = false;
+      setState(() {});
+    } else {
+      download = false;
+      setState(() {});
+    }
+  }
+
+  Widget buttonlogin(BuildContext context, String hint) {
+    return GestureDetector(
+      onTap: () {
+        register();
+      },
+      child: buttonLogin(context, hint),
+    );
+  }
+}
